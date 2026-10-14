@@ -34,20 +34,17 @@ export default function App() {
   const [lives, setLives] = useState(3);
   const [level, setLevel] = useState(1);
   const [combo, setCombo] = useState(0);
-  const [bombs, setBombs] = useState(1);
-  const [shieldActive, setShieldActive] = useState(false);
-  const [dualLaserActive, setDualLaserActive] = useState(false);
+  const [bombs, setBombs] = useState(2);
   const [currentQIndex, setCurrentQIndex] = useState(0);
 
   const canvasRef = useRef(null);
   const keys = useRef({});
+  const images = useRef({ ship: null, meteor: null, bg: null });
 
   const stateRef = useRef({
-    player: { x: 376, y: 520, width: 48, height: 44, speed: 15 },
+    player: { x: 370, y: 500, width: 60, height: 60, speed: 12 },
     lasers: [],
     meteors: [],
-    obstacles: [], // سنگ‌های مزاحم فضایی
-    powerups: [],
     stars: [],
     particles: [],
     lastShot: 0,
@@ -56,42 +53,42 @@ export default function App() {
     lives: 3,
     level: 1,
     combo: 0,
-    bombs: 1,
-    shield: false,
-    dualLaserTimer: 0,
+    bombs: 2,
     shake: 0,
     transitioning: false,
-    feedbackText: null,
-    levelBanner: null
+    feedbackText: null
   });
 
-  // تولید گزینه‌ها متناسب با لول
+  // لود ایمن تصاویر (پشتیبانی از هر دو پسوند png و webp)
+  useEffect(() => {
+    const shipImg = new Image();
+    shipImg.src = '/images/ship.png';
+    shipImg.onerror = () => { shipImg.src = '/images/ship.webp'; };
+
+    const meteorImg = new Image();
+    meteorImg.src = '/images/meteor.png';
+    meteorImg.onerror = () => { meteorImg.src = '/images/meteor.webp'; };
+
+    const bgImg = new Image();
+    bgImg.src = '/images/space-bg.png';
+    bgImg.onerror = () => { bgImg.src = '/images/space-bg.webp'; };
+
+    images.current = { ship: shipImg, meteor: meteorImg, bg: bgImg };
+  }, []);
+
   const spawnMeteors = (qIdx, lvl) => {
     const q = QUESTIONS[qIdx % QUESTIONS.length];
-    const baseSpeed = 2.4 + (lvl - 1) * 0.9; // با هر مرحله سرعت بیشتر می‌شود
+    const baseSpeed = 1.8 + (lvl - 1) * 0.5;
     return q.options.map((opt, i) => ({
       index: i,
-      x: 90 + i * 175,
-      y: -70 - (i % 2) * 35,
+      x: 95 + i * 175,
+      y: -70 - (i % 2) * 40,
       radius: 46,
       speed: baseSpeed + Math.random() * 0.4,
       text: `${i + 1}. ${opt}`,
-      isCorrect: (i === q.correct),
+      isCorrect: i === q.correct,
       isDestroyed: false
     }));
-  };
-
-  const spawnPowerup = (x, y) => {
-    const types = ['shield', 'dual', 'heart', 'bomb'];
-    const type = types[Math.floor(Math.random() * types.length)];
-    stateRef.current.powerups.push({
-      x,
-      y,
-      type,
-      radius: 17,
-      speed: 3,
-      angle: 0
-    });
   };
 
   const triggerNukeBomb = () => {
@@ -99,22 +96,19 @@ export default function App() {
     if (s.bombs <= 0 || s.transitioning) return;
     s.bombs -= 1;
     setBombs(s.bombs);
-    s.shake = 22;
+    s.shake = 20;
 
-    // پاکسازی سنگ‌های غلط و موانع با بمب
     s.meteors.forEach(m => {
       if (!m.isCorrect) m.isDestroyed = true;
     });
-    s.obstacles = [];
 
-    // ذرات سفید و طلایی بمب
-    for (let i = 0; i < 60; i++) {
+    for (let i = 0; i < 40; i++) {
       s.particles.push({
         x: 400,
         y: 300,
-        vx: (Math.random() - 0.5) * 18,
-        vy: (Math.random() - 0.5) * 18,
-        color: '#ffffff',
+        vx: (Math.random() - 0.5) * 16,
+        vy: (Math.random() - 0.5) * 16,
+        color: '#facc15',
         alpha: 1
       });
     }
@@ -127,22 +121,18 @@ export default function App() {
     setCombo(0);
     setBombs(2);
     setCurrentQIndex(0);
-    setShieldActive(false);
-    setDualLaserActive(false);
 
-    const stars = Array.from({ length: 80 }, () => ({
+    const stars = Array.from({ length: 60 }, () => ({
       x: Math.random() * 800,
       y: Math.random() * 600,
-      speed: 2 + Math.random() * 5,
-      size: Math.random() * 2.5
+      speed: 1.5 + Math.random() * 2.5,
+      size: Math.random() * 2 + 1
     }));
 
     stateRef.current = {
-      player: { x: 376, y: 520, width: 48, height: 44, speed: 15 },
+      player: { x: 370, y: 500, width: 60, height: 60, speed: 12 },
       lasers: [],
       meteors: spawnMeteors(0, 1),
-      obstacles: [],
-      powerups: [],
       stars,
       particles: [],
       lastShot: 0,
@@ -152,17 +142,10 @@ export default function App() {
       level: 1,
       combo: 0,
       bombs: 2,
-      shield: false,
-      dualLaserTimer: 0,
       shake: 0,
       transitioning: false,
-      feedbackText: null,
-      levelBanner: 'مرحله ۱ - سرعت پایه 🚀'
+      feedbackText: null
     };
-
-    setTimeout(() => {
-      stateRef.current.levelBanner = null;
-    }, 1800);
 
     setGameState('playing');
   };
@@ -200,49 +183,24 @@ export default function App() {
     const loop = () => {
       const s = stateRef.current;
       const p = s.player;
+      const imgs = images.current;
 
-      // حرکت پرسرعت سفینه (چپ، راست، بالا، پایین)
+      // حرکت سفینه
       if (keys.current['ArrowLeft'] || keys.current['KeyA']) p.x = Math.max(10, p.x - p.speed);
       if (keys.current['ArrowRight'] || keys.current['KeyD']) p.x = Math.min(800 - p.width - 10, p.x + p.speed);
-      if (keys.current['ArrowUp'] || keys.current['KeyW']) p.y = Math.max(70, p.y - p.speed);
-      if (keys.current['ArrowDown'] || keys.current['KeyS']) p.y = Math.min(545, p.y + p.speed);
+      if (keys.current['ArrowUp'] || keys.current['KeyW']) p.y = Math.max(60, p.y - p.speed);
+      if (keys.current['ArrowDown'] || keys.current['KeyS']) p.y = Math.min(530, p.y + p.speed);
 
-      // تایمر تیربار دوگانه
-      if (s.dualLaserTimer > 0) {
-        s.dualLaserTimer -= 1;
-        if (s.dualLaserTimer === 0) setDualLaserActive(false);
-      }
-
-      // شلیک تیر بسیار سریع
+      // شلیک
       const now = Date.now();
-      const fireRate = s.dualLaserTimer > 0 ? 100 : 160;
-      if (keys.current['Space'] && now - s.lastShot > fireRate && !s.transitioning) {
-        if (s.dualLaserTimer > 0) {
-          s.lasers.push({ x: p.x + 8, y: p.y, speed: 20, color: '#f43f5e' });
-          s.lasers.push({ x: p.x + p.width - 8, y: p.y, speed: 20, color: '#f43f5e' });
-        } else {
-          s.lasers.push({ x: p.x + p.width / 2, y: p.y, speed: 19, color: '#38bdf8' });
-        }
+      if (keys.current['Space'] && now - s.lastShot > 160 && !s.transitioning) {
+        s.lasers.push({ x: p.x + p.width / 2, y: p.y, speed: 20 });
         s.lastShot = now;
       }
 
-      // حرکت سریع تیرها
       s.lasers.forEach(l => (l.y -= l.speed));
       s.lasers = s.lasers.filter(l => l.y > -20);
 
-      // باران موانع فضایی تصادفی (هیجان اضافه)
-      if (Math.random() < 0.02 + s.level * 0.008 && s.obstacles.length < 3) {
-        s.obstacles.push({
-          x: Math.random() * 740 + 30,
-          y: -40,
-          radius: 18,
-          speed: 3.5 + s.level * 0.8
-        });
-      }
-      s.obstacles.forEach(ob => (ob.y += ob.speed));
-      s.obstacles = s.obstacles.filter(ob => ob.y < 650);
-
-      // آپدیت ستاره‌ها
       s.stars.forEach(st => {
         st.y += st.speed;
         if (st.y > 600) {
@@ -251,45 +209,16 @@ export default function App() {
         }
       });
 
-      // کاهش لرزش صفحه
-      if (s.shake > 0) s.shake *= 0.86;
+      if (s.shake > 0) s.shake *= 0.84;
       if (s.shake < 0.2) s.shake = 0;
 
-      // ذرات انفجار
       s.particles.forEach(pt => {
         pt.x += pt.vx;
         pt.y += pt.vy;
-        pt.alpha -= 0.025;
+        pt.alpha -= 0.03;
       });
       s.particles = s.particles.filter(pt => pt.alpha > 0);
 
-      // آپدیت آیتم‌ها
-      s.powerups.forEach(pu => {
-        pu.y += pu.speed;
-        pu.angle += 0.05;
-        const dist = Math.hypot(p.x + p.width / 2 - pu.x, p.y + p.height / 2 - pu.y);
-        if (dist < pu.radius + 24) {
-          pu.collected = true;
-          if (pu.type === 'shield') {
-            s.shield = true;
-            setShieldActive(true);
-          } else if (pu.type === 'dual') {
-            s.dualLaserTimer = 450;
-            setDualLaserActive(true);
-          } else if (pu.type === 'heart') {
-            if (s.lives < 5) {
-              s.lives += 1;
-              setLives(s.lives);
-            }
-          } else if (pu.type === 'bomb') {
-            s.bombs += 1;
-            setBombs(s.bombs);
-          }
-        }
-      });
-      s.powerups = s.powerups.filter(pu => !pu.collected && pu.y < 640);
-
-      // بررسی پاسخ درست
       const triggerCorrect = (target) => {
         target.isDestroyed = true;
         s.transitioning = true;
@@ -300,20 +229,14 @@ export default function App() {
         s.score += gained;
         setScore(s.score);
         s.shake = 16;
-        s.feedbackText = s.combo > 1 ? `فوق‌العاده! کمبو X${s.combo} 🔥 (+${gained})` : `آفرین! پاسخ درست (+${gained}) 🎯`;
+        s.feedbackText = s.combo > 1 ? `عالی! کمبو X${s.combo} 🔥 (+${gained})` : `آفرین! پاسخ درست 🎯 (+${gained})`;
 
-        // رها شدن جایزه
-        if (Math.random() > 0.35) {
-          spawnPowerup(target.x, target.y);
-        }
-
-        // ذرات انفجار سبز نئونی
-        for (let k = 0; k < 40; k++) {
+        for (let k = 0; k < 35; k++) {
           s.particles.push({
             x: target.x,
             y: target.y,
-            vx: (Math.random() - 0.5) * 12,
-            vy: (Math.random() - 0.5) * 12,
+            vx: (Math.random() - 0.5) * 14,
+            vy: (Math.random() - 0.5) * 14,
             color: '#22c55e',
             alpha: 1
           });
@@ -321,57 +244,29 @@ export default function App() {
 
         setTimeout(() => {
           let nextQ = s.currentQIndex + 1;
-          // اگر همه سوالات تمام شد -> رفتن به مرحله بعدی با سرعت بالاتر!
           if (nextQ >= QUESTIONS.length) {
             nextQ = 0;
             s.level += 1;
             setLevel(s.level);
-            s.levelBanner = `⚡ صعود به مرحله ${s.level}! سرعت بالاتر رفت! ⚡`;
-            setTimeout(() => {
-              stateRef.current.levelBanner = null;
-            }, 1800);
           }
 
           s.currentQIndex = nextQ;
           setCurrentQIndex(s.currentQIndex);
           s.meteors = spawnMeteors(nextQ, s.level);
           s.lasers = [];
-          s.obstacles = [];
           s.feedbackText = null;
           s.transitioning = false;
         }, 850);
       };
 
       if (!s.transitioning) {
-        // برخورد موانع سنگی مزاحم با سفینه
-        for (let ob of s.obstacles) {
-          const distOb = Math.hypot(p.x + p.width / 2 - ob.x, p.y + p.height / 2 - ob.y);
-          if (distOb < ob.radius + 18) {
-            ob.y = 700;
-            s.shake = 15;
-            if (s.shield) {
-              s.shield = false;
-              setShieldActive(false);
-            } else {
-              s.lives -= 1;
-              s.combo = 0;
-              setCombo(0);
-              setLives(s.lives);
-              if (s.lives <= 0) {
-                setGameState('gameover');
-                return;
-              }
-            }
-          }
-        }
-
         s.meteors.forEach(m => {
           if (m.isDestroyed) return;
           m.y += m.speed;
 
-          // برخورد مستقیم خود سفینه
+          // برخورد سفینه با شهاب‌سنگ
           const shipDist = Math.hypot(p.x + p.width / 2 - m.x, p.y + p.height / 2 - m.y);
-          if (shipDist < m.radius + 18) {
+          if (shipDist < m.radius + 20) {
             if (m.isCorrect) {
               triggerCorrect(m);
               return;
@@ -380,33 +275,27 @@ export default function App() {
               s.shake = 18;
               s.combo = 0;
               setCombo(0);
-
-              if (s.shield) {
-                s.shield = false;
-                setShieldActive(false);
-              } else {
-                s.lives -= 1;
-                setLives(s.lives);
-                if (s.lives <= 0) {
-                  setGameState('gameover');
-                  return;
-                }
+              s.lives -= 1;
+              setLives(s.lives);
+              if (s.lives <= 0) {
+                setGameState('gameover');
+                return;
               }
             }
           }
 
-          // برخورد تیر به شهاب سنگ
+          // برخورد لیزر با شهاب‌سنگ
           for (let i = s.lasers.length - 1; i >= 0; i--) {
             const l = s.lasers[i];
             const dist = Math.hypot(l.x - m.x, l.y - m.y);
-            if (dist < m.radius + 10) {
+            if (dist < m.radius + 8) {
               s.lasers.splice(i, 1);
               if (m.isCorrect) {
                 triggerCorrect(m);
                 return;
               } else {
                 m.isDestroyed = true;
-                s.shake = 6;
+                s.shake = 8;
                 s.combo = 0;
                 setCombo(0);
                 for (let k = 0; k < 18; k++) {
@@ -415,7 +304,7 @@ export default function App() {
                     y: m.y,
                     vx: (Math.random() - 0.5) * 8,
                     vy: (Math.random() - 0.5) * 8,
-                    color: '#ea580c',
+                    color: '#f97316',
                     alpha: 1
                   });
                 }
@@ -425,7 +314,6 @@ export default function App() {
           }
         });
 
-        // اگر سنگ‌ها گذشتند
         if (s.meteors.every(m => m.y > 640 || m.isDestroyed)) {
           s.combo = 0;
           setCombo(0);
@@ -436,57 +324,29 @@ export default function App() {
         }
       }
 
-      // ================== رندرینگ گرافیکی فوق‌سریع و سبک ==================
+      // ================= رندر بازی =================
       ctx.save();
       if (s.shake > 0) {
         ctx.translate((Math.random() - 0.5) * s.shake, (Math.random() - 0.5) * s.shake);
       }
 
-      // پس‌زمینه کهکشان
-      ctx.fillStyle = '#050816';
-      ctx.fillRect(0, 0, 800, 600);
+      // ۱. پس‌زمینه کهکشانی (با فال‌بک رنگی اگر عکس لود نشود)
+      if (imgs.bg && imgs.bg.complete && imgs.bg.naturalWidth > 0) {
+        ctx.drawImage(imgs.bg, 0, 0, 800, 600);
+      } else {
+        ctx.fillStyle = '#020617';
+        ctx.fillRect(0, 0, 800, 600);
+      }
 
-      // ستاره‌های تند و پرسرعت
-      ctx.fillStyle = '#94a3b8';
-      s.stars.forEach(st => {
-        ctx.fillRect(st.x, st.y, st.size, st.size + 2); // کشیدگی ستاره‌ها برای القای سرعت نور
-      });
+      // ۲. ستاره‌های متحرک
+      ctx.fillStyle = '#ffffff';
+      s.stars.forEach(st => ctx.fillRect(st.x, st.y, st.size, st.size + 1));
 
-      // موانع سنگی مزاحم
-      ctx.fillStyle = '#78716c';
-      s.obstacles.forEach(ob => {
-        ctx.beginPath();
-        ctx.arc(ob.x, ob.y, ob.radius, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = '#ef4444';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-      });
+      // ۳. لیزرها
+      ctx.fillStyle = '#38bdf8';
+      s.lasers.forEach(l => ctx.fillRect(l.x - 3, l.y, 6, 22));
 
-      // پاورآپ‌ها
-      s.powerups.forEach(pu => {
-        ctx.save();
-        ctx.translate(pu.x, pu.y);
-        ctx.beginPath();
-        ctx.arc(0, 0, pu.radius, 0, Math.PI * 2);
-        ctx.fillStyle = pu.type === 'shield' ? '#0284c7' : pu.type === 'dual' ? '#e11d48' : pu.type === 'bomb' ? '#eab308' : '#16a34a';
-        ctx.fill();
-        ctx.fillStyle = '#fff';
-        ctx.font = 'bold 14px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        const icon = pu.type === 'shield' ? '🛡️' : pu.type === 'dual' ? '⚡' : pu.type === 'bomb' ? '💣' : '💖';
-        ctx.fillText(icon, 0, 1);
-        ctx.restore();
-      });
-
-      // تیرها
-      s.lasers.forEach(l => {
-        ctx.fillStyle = l.color;
-        ctx.fillRect(l.x - 3, l.y, 6, 18);
-      });
-
-      // ذرات
+      // ۴. ذرات انفجار
       s.particles.forEach(pt => {
         ctx.fillStyle = pt.color;
         ctx.globalAlpha = Math.max(0, pt.alpha);
@@ -494,75 +354,52 @@ export default function App() {
       });
       ctx.globalAlpha = 1;
 
-      // شهاب‌سنگ‌های کوانتومی
+      // ۵. رسم شهاب‌سنگ‌ها + گزینه‌ها
       s.meteors.forEach(m => {
         if (m.isDestroyed) return;
         ctx.save();
-        ctx.beginPath();
-        ctx.arc(m.x, m.y, m.radius, 0, Math.PI * 2);
-        ctx.fillStyle = '#1e293b';
-        ctx.fill();
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = '#38bdf8';
-        ctx.stroke();
 
-        ctx.fillStyle = '#f8fafc';
-        ctx.font = 'bold 13px Vazirmatn, Tahoma, sans-serif';
+        if (imgs.meteor && imgs.meteor.complete && imgs.meteor.naturalWidth > 0) {
+          ctx.drawImage(imgs.meteor, m.x - m.radius, m.y - m.radius, m.radius * 2, m.radius * 2);
+        } else {
+          ctx.beginPath();
+          ctx.arc(m.x, m.y, m.radius, 0, Math.PI * 2);
+          ctx.fillStyle = '#334155';
+          ctx.fill();
+        }
+
+        // کادر متن گزینه
+        ctx.fillStyle = 'rgba(2, 6, 23, 0.85)';
+        ctx.fillRect(m.x - 65, m.y - 14, 130, 28);
+        ctx.strokeStyle = '#38bdf8';
+        ctx.strokeRect(m.x - 65, m.y - 14, 130, 28);
+
+        // متن گزینه
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 13px Tahoma, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(m.text, m.x, m.y);
+
         ctx.restore();
       });
 
-      // سفینه جنگنده فضایی
+      // ۶. رسم سفینه جنگنده
       ctx.save();
-      ctx.translate(p.x, p.y);
-
-      // آتش پیشران دوقلو
-      ctx.fillStyle = '#f97316';
-      const fLen = 12 + Math.random() * 8;
-      ctx.fillRect(8, p.height - 3, 6, fLen);
-      ctx.fillRect(p.width - 14, p.height - 3, 6, fLen);
-
-      // بدنه
-      ctx.fillStyle = '#0284c7';
-      ctx.beginPath();
-      ctx.moveTo(p.width / 2, 0);
-      ctx.lineTo(p.width, p.height - 6);
-      ctx.lineTo(p.width / 2, p.height - 12);
-      ctx.lineTo(0, p.height - 6);
-      ctx.closePath();
-      ctx.fill();
-
-      // باله‌ها
-      ctx.fillStyle = '#4f46e5';
-      ctx.fillRect(-6, p.height - 15, 6, 12);
-      ctx.fillRect(p.width, p.height - 15, 6, 12);
-
-      // هاله سپر
-      if (s.shield) {
-        ctx.strokeStyle = '#38bdf8';
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.arc(p.width / 2, p.height / 2, 34, 0, Math.PI * 2);
-        ctx.stroke();
+      if (imgs.ship && imgs.ship.complete && imgs.ship.naturalWidth > 0) {
+        ctx.drawImage(imgs.ship, p.x, p.y, p.width, p.height);
+      } else {
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(p.x, p.y, p.width, p.height);
       }
       ctx.restore();
 
-      // پیام فیدبک
+      // پیام درستی
       if (s.feedbackText) {
         ctx.fillStyle = '#22c55e';
-        ctx.font = 'bold 24px Vazirmatn, Tahoma, sans-serif';
+        ctx.font = 'bold 24px Tahoma, sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText(s.feedbackText, 400, 270);
-      }
-
-      // بنر مرحله بعد
-      if (s.levelBanner) {
-        ctx.fillStyle = '#facc15';
-        ctx.font = 'bold 28px Vazirmatn, Tahoma, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(s.levelBanner, 400, 220);
       }
 
       ctx.restore();
@@ -574,42 +411,38 @@ export default function App() {
   }, [gameState]);
 
   return (
-    <div style={{ background: '#020617', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#fff', fontFamily: 'sans-serif' }}>
+    <div style={{ background: '#020617', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#fff', fontFamily: 'Tahoma, sans-serif' }}>
       {gameState === 'menu' && (
-        <div style={{ textAlign: 'center', background: '#0b1329', padding: '40px 50px', borderRadius: '18px', border: '1px solid #1e293b', boxShadow: '0 0 50px rgba(14, 165, 233, 0.35)' }}>
-          <h1 style={{ fontSize: '38px', background: 'linear-gradient(to right, #38bdf8, #818cf8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontWeight: '900', marginBottom: '14px' }}>
-            ⚡ SPACE SHOOTER: HYPER DRIVE
+        <div style={{ textAlign: 'center', background: '#0b1329', padding: '40px 50px', borderRadius: '18px', border: '1px solid #1e293b' }}>
+          <h1 style={{ fontSize: '36px', color: '#38bdf8', fontWeight: '900', marginBottom: '14px' }}>
+            🚀 SPACE SHOOTER QUIZ
           </h1>
-          <p style={{ color: '#94a3b8', fontSize: '16px', marginBottom: '16px' }}>
-            هدایت در ۴ جهت با ⬅️ ➡️ ⬆️ ⬇️ یا [W, A, S, D] | <b>شلیک با [Space]</b>
+          <p style={{ color: '#94a3b8', fontSize: '15px', marginBottom: '14px' }}>
+            حرکت با کلیدهای جهتی یا [W, A, S, D] | <b>شلیک با [Space]</b>
           </p>
-          <div style={{ background: '#0f172a', padding: '12px', borderRadius: '10px', marginBottom: '24px', display: 'flex', justifyContent: 'center', gap: '16px', fontSize: '14px', color: '#cbd5e1' }}>
-            <span>💣 بمب اتم با کلید [B]</span>
-            <span>⚡ تیر دوقلو</span>
-            <span>🛡️ سپر انرژی</span>
-            <span>🔥 کمبوی امتیازی</span>
-          </div>
+          <p style={{ color: '#facc15', fontSize: '14px', marginBottom: '24px' }}>
+            💣 بمب پاکسازی صفحه با کلید [B]
+          </p>
           <button
             onClick={startGame}
-            style={{ background: 'linear-gradient(to right, #0ea5e9, #6366f1)', color: '#fff', border: 'none', padding: '16px 40px', fontSize: '18px', borderRadius: '12px', cursor: 'pointer', fontWeight: 'bold' }}
+            style={{ background: '#0ea5e9', color: '#fff', border: 'none', padding: '14px 36px', fontSize: '18px', borderRadius: '10px', cursor: 'pointer', fontWeight: 'bold' }}
           >
-            شروع ماموریت پرسرعت 🚀
+            شروع ماموریت 🎮
           </button>
         </div>
       )}
 
       {gameState === 'playing' && (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          {/* نوار اطلاعات بازی */}
           <div style={{ width: '800px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#0b1329', padding: '12px 20px', borderRadius: '14px 14px 0 0', border: '1px solid #1e293b', borderBottom: 'none' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <span style={{ color: '#facc15', fontSize: '18px', fontWeight: 'bold' }}>⭐ {score}</span>
               <span style={{ background: '#3b82f6', padding: '3px 8px', borderRadius: '6px', fontSize: '12px', fontWeight: 'bold' }}>مرحله {level}</span>
               {combo > 1 && <span style={{ background: '#ea580c', padding: '3px 8px', borderRadius: '6px', fontSize: '12px', fontWeight: 'bold' }}>X{combo} کمبو 🔥</span>}
-              <span style={{ background: '#7c3aed', padding: '3px 8px', borderRadius: '6px', fontSize: '12px' }}>💣 بمب: {bombs} (کلید B)</span>
+              <span style={{ background: '#7c3aed', padding: '3px 8px', borderRadius: '6px', fontSize: '12px' }}>💣 بمب: {bombs}</span>
             </div>
 
-            <span style={{ fontSize: '16px', fontWeight: 'bold', color: '#38bdf8' }}>
+            <span style={{ fontSize: '15px', fontWeight: 'bold', color: '#38bdf8' }}>
               سوال {currentQIndex + 1}: {QUESTIONS[currentQIndex].q}
             </span>
 
@@ -628,7 +461,7 @@ export default function App() {
       {gameState === 'gameover' && (
         <div style={{ textAlign: 'center', background: '#0b1329', padding: '40px', borderRadius: '16px', border: '1px solid #ef4444' }}>
           <h2 style={{ fontSize: '32px', color: '#f87171', marginBottom: '10px' }}>سفینه منهدم شد! 💥</h2>
-          <p style={{ color: '#cbd5e1', marginBottom: '10px', fontSize: '18px' }}>تا مرحله: <strong style={{ color: '#38bdf8' }}>{level}</strong> پیش رفتی!</p>
+          <p style={{ color: '#cbd5e1', marginBottom: '10px', fontSize: '18px' }}>مرحله: <strong style={{ color: '#38bdf8' }}>{level}</strong></p>
           <p style={{ color: '#cbd5e1', marginBottom: '24px', fontSize: '18px' }}>امتیاز نهایی: <strong style={{ color: '#facc15', fontSize: '24px' }}>{score}</strong></p>
           <button
             onClick={startGame}
