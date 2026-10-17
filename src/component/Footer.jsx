@@ -12,7 +12,7 @@ export default function Footer({ onTeacherClick }) {
 
         <div className="footer-links">
           <a href="#features">امکانات</a>
-          <a href="#game-modes">مدل‌های بازی</a>
+         <a href="#modes">مدل‌های بازی</a>
           <a href="#how-it-works">راهنمای استفاده</a>
           <button type="button" onClick={onTeacherClick}>
             ورود معلم

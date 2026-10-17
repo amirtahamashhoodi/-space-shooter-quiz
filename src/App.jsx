@@ -5,11 +5,18 @@ import { QUESTIONS } from './data/quizData';
 import LandingPage from './pages/LandingPage';
 import GameScreen from './pages/GameScreen';
 import GameOverScreen from './pages/GameOverScreen';
+import TeacherDashboard from './pages/TeacherDashboard';
+import TeacherAuthModal from './component/TeacherAuthModal';
 import './App.css';
 
 export default function App() {
+  // صفحات مجاز: 'home' | 'playing' | 'gameover' | 'teacher-dashboard'
   const [screen, setScreen] = useState('home');
   const [player, setPlayer] = useState({ name: '', code: '' });
+
+  // وضعیت باز بودن پاپ‌آپ لاگین معلم و لاگین بودن
+  const [isTeacherModalOpen, setIsTeacherModalOpen] = useState(false);
+  const [isTeacherLoggedIn, setIsTeacherLoggedIn] = useState(false);
 
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
@@ -20,10 +27,13 @@ export default function App() {
   const containerRef = useRef(null);
   const gameRef = useRef(null);
 
-  const showTeacherMessage = () => {
-    window.alert(
-      'پنل معلم در مرحله بعدی طراحی می‌شود. فعلاً صفحه اول و نسخه نمایشی بازی آماده است.'
-    );
+  // هندلر کلیک ورود معلم: اگر لاگین بود مستقیم می‌ره تو پنل، اگر نبود مودال باز می‌شه
+  const handleTeacherClick = () => {
+    if (isTeacherLoggedIn) {
+      setScreen('teacher-dashboard');
+    } else {
+      setIsTeacherModalOpen(true);
+    }
   };
 
   const startGame = (playerInfo = { name: 'بازیکن دمو', code: '842109' }) => {
@@ -124,6 +134,7 @@ export default function App() {
     };
   }, [screen]);
 
+  // ۱. صفحه بازی فعال
   if (screen === 'playing') {
     return (
       <GameScreen
@@ -139,6 +150,7 @@ export default function App() {
     );
   }
 
+  // ۲. صفحه گیم‌اور
   if (screen === 'gameover') {
     return (
       <GameOverScreen
@@ -149,10 +161,37 @@ export default function App() {
     );
   }
 
+  // ۳. صفحه پنل معلم
+  if (screen === 'teacher-dashboard') {
+    return (
+      <TeacherDashboard
+        onLogout={() => {
+          setIsTeacherLoggedIn(false);
+          setScreen('home');
+        }}
+        onBackToHome={goHome}
+      />
+    );
+  }
+
+  // ۴. صفحه اصلی (Landing) + مودال لاگین معلم
   return (
-    <LandingPage
-      onStartGame={startGame}
-      onTeacherClick={showTeacherMessage}
-    />
+    <>
+      <LandingPage
+        onStartGame={startGame}
+        onTeacherClick={handleTeacherClick}
+      />
+
+      {isTeacherModalOpen && (
+        <TeacherAuthModal
+          onClose={() => setIsTeacherModalOpen(false)}
+          onSuccess={() => {
+            setIsTeacherLoggedIn(true);
+            setIsTeacherModalOpen(false);
+            setScreen('teacher-dashboard');
+          }}
+        />
+      )}
+    </>
   );
 }

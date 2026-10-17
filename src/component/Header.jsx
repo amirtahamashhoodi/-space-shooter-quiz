@@ -15,9 +15,10 @@ export default function Header({ onTeacherClick, onJoinClick }) {
           <a href="#features" onClick={closeMenu}>
             امکانات
           </a>
-          <a href="#game-modes" onClick={closeMenu}>
-            مدل‌های بازی
-          </a>
+         <a href="#modes" onClick={closeMenu}>
+  مدل‌های بازی
+</a>
+
           <a href="#how-it-works" onClick={closeMenu}>
             راهنمای استفاده
           </a>
