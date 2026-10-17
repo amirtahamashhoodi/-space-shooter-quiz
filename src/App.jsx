@@ -7,6 +7,7 @@ import GameScreen from './pages/GameScreen';
 import GameOverScreen from './pages/GameOverScreen';
 import TeacherDashboard from './pages/TeacherDashboard';
 import TeacherAuthModal from './component/TeacherAuthModal';
+import { t } from './utils/i18n';
 import './App.css';
 
 export default function App() {
@@ -38,8 +39,12 @@ export default function App() {
     }
   };
 
-  const startGame = (playerInfo = { name: 'بازیکن دمو', code: '842109' }) => {
-    setPlayer(playerInfo);
+  const startGame = (playerInfo) => {
+    const defaultPlayer = {
+      name: t('common.default_player_name') || 'بازیکن دمو',
+      code: '842109'
+    };
+    setPlayer(playerInfo || defaultPlayer);
     setScore(0);
     setLives(3);
     setCombo(0);

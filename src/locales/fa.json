@@ -1,5 +1,8 @@
 {
   "app_title": "سایبرکوییز | CyberQuiz",
+  "common": {
+    "default_player_name": "بازیکن دمو"
+  },
   "logo": {
     "aria_label": "صفحه اصلی سایبرکوییز",
     "name": "CyberQuiz",
