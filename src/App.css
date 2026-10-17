@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap');
+
 
 :root {
   --bg-main: #020617;
@@ -31,7 +31,7 @@ body {
   min-width: 320px;
   background: var(--bg-main);
   color: var(--white);
-  font-family: 'Vazirmatn', Tahoma, Arial, sans-serif;
+  font-family: system-ui, -apple-system, 'Segoe UI', Tahoma, 'Vazirmatn', sans-serif;
 }
 
 button,

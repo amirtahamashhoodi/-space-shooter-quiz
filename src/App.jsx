@@ -1,5 +1,5 @@
+// src/App.jsx
 import React, { useEffect, useRef, useState } from 'react';
-import Phaser from 'phaser';
 import SpaceBlasterScene from './SpaceBlasterScene';
 import { QUESTIONS } from './data/quizData';
 import LandingPage from './pages/LandingPage';
@@ -11,11 +11,9 @@ import { t } from './utils/i18n';
 import './App.css';
 
 export default function App() {
-  // صفحات مجاز: 'home' | 'playing' | 'gameover' | 'teacher-dashboard'
   const [screen, setScreen] = useState('home');
   const [player, setPlayer] = useState({ name: '', code: '' });
 
-  // وضعیت باز بودن پاپ‌آپ لاگین معلم و لاگین بودن
   const [isTeacherModalOpen, setIsTeacherModalOpen] = useState(false);
   const [isTeacherLoggedIn, setIsTeacherLoggedIn] = useState(false);
   const [modalKey, setModalKey] = useState(0);
@@ -29,7 +27,6 @@ export default function App() {
   const containerRef = useRef(null);
   const gameRef = useRef(null);
 
-  // هندلر کلیک ورود معلم: اگر لاگین بود مستقیم می‌ره تو پنل، اگر نبود مودال با کلید تازه باز می‌شه
   const handleTeacherClick = () => {
     if (isTeacherLoggedIn) {
       setScreen('teacher-dashboard');
@@ -70,41 +67,49 @@ export default function App() {
       return undefined;
     }
 
-    if (gameRef.current) {
-      gameRef.current.destroy(true);
-      gameRef.current = null;
-    }
+    let isMounted = true;
 
-    const config = {
-      type: Phaser.AUTO,
-      width: 800,
-      height: 600,
-      parent: containerRef.current,
-      backgroundColor: '#020617',
-      physics: {
-        default: 'arcade',
-        arcade: {
-          gravity: { y: 0 },
-          debug: false
-        }
-      },
-      scale: {
-        mode: Phaser.Scale.FIT,
-        autoCenter: Phaser.Scale.CENTER_BOTH,
+    // لود سبک و تنبل (Lazy Load) فیزر بدون کند کردن لندینگ پیج
+    import('phaser').then((phaserModule) => {
+      if (!isMounted || !containerRef.current) return;
+      const Phaser = phaserModule.default || phaserModule;
+
+      if (gameRef.current) {
+        gameRef.current.destroy(true);
+        gameRef.current = null;
+      }
+
+      const config = {
+        type: Phaser.AUTO,
         width: 800,
-        height: 600
-      },
-      render: {
-        antialias: true,
-        pixelArt: false,
-        roundPixels: true
-      },
-      scene: SpaceBlasterScene
-    };
+        height: 600,
+        parent: containerRef.current,
+        backgroundColor: '#020617',
+        physics: {
+          default: 'arcade',
+          arcade: {
+            gravity: { y: 0 },
+            debug: false
+          }
+        },
+        scale: {
+          mode: Phaser.Scale.FIT,
+          autoCenter: Phaser.Scale.CENTER_BOTH,
+          width: 800,
+          height: 600
+        },
+        render: {
+          antialias: true,
+          pixelArt: false,
+          roundPixels: true
+        },
+        scene: SpaceBlasterScene
+      };
 
-    const game = new Phaser.Game(config);
-    gameRef.current = game;
-    game.registry.set('questions', QUESTIONS);
+      const game = new Phaser.Game(config);
+      gameRef.current = game;
+      game.registry.set('questions', QUESTIONS);
+    });
 
     const handleScore = (event) => {
       const detail = event.detail || {};
@@ -130,6 +135,7 @@ export default function App() {
     window.addEventListener('cyberquiz:gameover', handleGameOver);
 
     return () => {
+      isMounted = false;
       window.removeEventListener('cyberquiz:score', handleScore);
       window.removeEventListener('cyberquiz:question', handleQuestion);
       window.removeEventListener('cyberquiz:gameover', handleGameOver);
