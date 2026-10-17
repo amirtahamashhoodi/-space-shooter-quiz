@@ -17,6 +17,7 @@ export default function App() {
   // وضعیت باز بودن پاپ‌آپ لاگین معلم و لاگین بودن
   const [isTeacherModalOpen, setIsTeacherModalOpen] = useState(false);
   const [isTeacherLoggedIn, setIsTeacherLoggedIn] = useState(false);
+  const [modalKey, setModalKey] = useState(0);
 
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
@@ -27,11 +28,12 @@ export default function App() {
   const containerRef = useRef(null);
   const gameRef = useRef(null);
 
-  // هندلر کلیک ورود معلم: اگر لاگین بود مستقیم می‌ره تو پنل، اگر نبود مودال باز می‌شه
+  // هندلر کلیک ورود معلم: اگر لاگین بود مستقیم می‌ره تو پنل، اگر نبود مودال با کلید تازه باز می‌شه
   const handleTeacherClick = () => {
     if (isTeacherLoggedIn) {
       setScreen('teacher-dashboard');
     } else {
+      setModalKey((prev) => prev + 1);
       setIsTeacherModalOpen(true);
     }
   };
@@ -184,6 +186,7 @@ export default function App() {
 
       {isTeacherModalOpen && (
         <TeacherAuthModal
+          key={modalKey}
           onClose={() => setIsTeacherModalOpen(false)}
           onSuccess={() => {
             setIsTeacherLoggedIn(true);

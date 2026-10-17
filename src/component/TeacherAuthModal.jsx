@@ -1,4 +1,4 @@
-// src/components/TeacherAuthModal.jsx
+// src/component/TeacherAuthModal.jsx
 import React, { useState } from 'react';
 
 export default function TeacherAuthModal({ onClose, onSuccess }) {
@@ -7,19 +7,37 @@ export default function TeacherAuthModal({ onClose, onSuccess }) {
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
 
+  // پاک کردن فرم
+  const resetForm = () => {
+    setPhoneOrEmail('');
+    setPassword('');
+    setFullName('');
+  };
+
+  const handleTabSwitch = (newMode) => {
+    setMode(newMode);
+    resetForm();
+  };
+
+  const handleClose = () => {
+    resetForm();
+    onClose();
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!phoneOrEmail || !password) {
+    if (!phoneOrEmail || !password || (mode === 'register' && !fullName)) {
       alert('لطفاً فیلدها را کامل کنید.');
       return;
     }
+    resetForm();
     onSuccess();
   };
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
+    <div className="modal-backdrop" onClick={handleClose}>
       <div className="modal-card" onClick={(e) => e.stopPropagation()}>
-        <button className="modal-close-btn" onClick={onClose} aria-label="بستن">
+        <button className="modal-close-btn" onClick={handleClose} aria-label="بستن">
           ✕
         </button>
 
@@ -39,20 +57,20 @@ export default function TeacherAuthModal({ onClose, onSuccess }) {
           <button 
             type="button" 
             className={`tab-btn ${mode === 'login' ? 'active' : ''}`}
-            onClick={() => setMode('login')}
+            onClick={() => handleTabSwitch('login')}
           >
             ورود
           </button>
           <button 
             type="button" 
             className={`tab-btn ${mode === 'register' ? 'active' : ''}`}
-            onClick={() => setMode('register')}
+            onClick={() => handleTabSwitch('register')}
           >
             ثبت‌نام جدید
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="auth-form">
+        <form onSubmit={handleSubmit} className="auth-form" autoComplete="off">
           {mode === 'register' && (
             <div className="form-group">
               <label>نام و نام خانوادگی</label>
@@ -61,6 +79,7 @@ export default function TeacherAuthModal({ onClose, onSuccess }) {
                 placeholder="مثال: مریم کریمی"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
+                autoComplete="off"
                 required
               />
             </div>
@@ -70,9 +89,11 @@ export default function TeacherAuthModal({ onClose, onSuccess }) {
             <label>شماره موبایل یا ایمیل</label>
             <input
               type="text"
+              name="teacher_login_identifier"
               placeholder="0912xxxxxxx یا teacher@school.ir"
               value={phoneOrEmail}
               onChange={(e) => setPhoneOrEmail(e.target.value)}
+              autoComplete="off"
               required
             />
           </div>
@@ -81,9 +102,11 @@ export default function TeacherAuthModal({ onClose, onSuccess }) {
             <label>کلمه عبور</label>
             <input
               type="password"
+              name="teacher_login_secret"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              autoComplete="new-password"
               required
             />
           </div>
