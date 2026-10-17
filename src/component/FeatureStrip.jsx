@@ -1,26 +1,27 @@
 import React from 'react';
+import { t } from '../utils/i18n';
 
 export default function FeatureStrip() {
   const features = [
     {
       icon: '⚡',
-      title: 'سریع و ساده',
-      text: 'دانش‌آموز با یک کد وارد می‌شود.'
+      title: t('feature_strip.f1_title'),
+      text: t('feature_strip.f1_text')
     },
     {
       icon: '📱',
-      title: 'همه‌جا قابل اجرا',
-      text: 'مناسب موبایل، تبلت و لپ‌تاپ.'
+      title: t('feature_strip.f2_title'),
+      text: t('feature_strip.f2_text')
     },
     {
       icon: '📊',
-      title: 'نتیجه قابل‌اندازه‌گیری',
-      text: 'امتیاز و عملکرد دانش‌آموز ثبت می‌شود.'
+      title: t('feature_strip.f3_title'),
+      text: t('feature_strip.f3_text')
     },
     {
       icon: '🛡️',
-      title: 'مناسب کلاس',
-      text: 'برای تمرین، آزمون و رقابت کلاسی.'
+      title: t('feature_strip.f4_title'),
+      text: t('feature_strip.f4_text')
     }
   ];
 

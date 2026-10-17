@@ -1,4 +1,5 @@
 import React from 'react';
+import { t } from '../utils/i18n';
 
 export default function GameScreen({
   score,
@@ -15,11 +16,11 @@ export default function GameScreen({
 
       <div className="game-top-actions">
         <button type="button" className="back-home-button" onClick={onBackHome}>
-          → بازگشت به صفحه اصلی
+          {t('game_screen.back_to_home')}
         </button>
 
         <div className="game-brand-small">
-          <span>⚡</span> CyberQuiz
+          <span>⚡</span> {t('game_screen.brand_name')}
         </div>
       </div>
 
@@ -27,15 +28,26 @@ export default function GameScreen({
         <div className="game-header">
           <div className="game-stat-group">
             <span className="game-score">⭐ {score}</span>
-            {combo > 1 && <span className="combo-badge">کمبو ×{combo} 🔥</span>}
+            {combo > 1 && (
+              <span className="combo-badge">
+                {t('game_screen.combo_label', { combo })}
+              </span>
+            )}
           </div>
 
           <div className="game-question-title">
-            <span className="question-progress">سؤال {qIndex + 1}</span>
-            <strong>{currentQuestion?.q || 'در حال آماده‌سازی...'}</strong>
+            <span className="question-progress">
+              {t('game_screen.question_progress', { index: qIndex + 1 })}
+            </span>
+            <strong>
+              {currentQuestion?.q || t('game_screen.loading_question')}
+            </strong>
           </div>
 
-          <div className="game-lives" aria-label={`${lives} جان باقی مانده`}>
+          <div
+            className="game-lives"
+            aria-label={t('game_screen.lives_aria', { lives })}
+          >
             {lives > 0 ? '❤️'.repeat(lives) : '💔'}
           </div>
         </div>
@@ -45,9 +57,9 @@ export default function GameScreen({
         </div>
 
         <div className="game-help">
-          <span>حرکت: کلیدهای جهت‌نما یا W A S D</span>
-          <span>شلیک: Space</span>
-          <span>بمب EMP: B</span>
+          <span>{t('game_screen.help_movement')}</span>
+          <span>{t('game_screen.help_shoot')}</span>
+          <span>{t('game_screen.help_emp')}</span>
         </div>
       </div>
     </main>

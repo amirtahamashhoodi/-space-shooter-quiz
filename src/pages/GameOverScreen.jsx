@@ -1,4 +1,6 @@
+// src/pages/GameOverScreen.jsx
 import React from 'react';
+import { t } from '../utils/i18n';
 
 export default function GameOverScreen({ score, onRestart, onBackHome }) {
   return (
@@ -6,23 +8,21 @@ export default function GameOverScreen({ score, onRestart, onBackHome }) {
       <div className="gameover-card">
         <div className="gameover-icon">💥</div>
 
-        <span className="eyebrow">ماموریت به پایان رسید</span>
+        <span className="eyebrow">{t('game_over.eyebrow')}</span>
 
-        <h1>نتیجه مأموریت</h1>
+        <h1>{t('game_over.title')}</h1>
 
         <div className="final-score">
-          <span>امتیاز نهایی</span>
+          <span>{t('game_over.final_score')}</span>
           <strong>{score}</strong>
-          <small>XP</small>
+          <small>{t('game_over.score_unit')}</small>
         </div>
 
-        <p>
-          عملکردت ثبت شد. می‌توانی دوباره تلاش کنی و امتیاز بیشتری بگیری.
-        </p>
+        <p>{t('game_over.desc')}</p>
 
         <div className="gameover-actions">
           <button type="button" className="primary-button" onClick={onRestart}>
-            تلاش مجدد 🔄
+            {t('game_over.restart_btn')}
           </button>
 
           <button
@@ -30,7 +30,7 @@ export default function GameOverScreen({ score, onRestart, onBackHome }) {
             className="outline-button"
             onClick={onBackHome}
           >
-            صفحه اصلی
+            {t('game_over.home_btn')}
           </button>
         </div>
       </div>

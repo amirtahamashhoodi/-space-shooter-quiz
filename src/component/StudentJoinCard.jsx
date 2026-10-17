@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { t } from '../utils/i18n';
 
 export default function StudentJoinCard({ onStartGame }) {
   const [gameCode, setGameCode] = useState('');
@@ -11,12 +12,12 @@ export default function StudentJoinCard({ onStartGame }) {
     const normalizedCode = gameCode.replace(/\D/g, '');
 
     if (normalizedCode.length !== 6) {
-      setError('کد بازی باید ۶ رقمی باشد.');
+      setError(t('student_join.error_code_len'));
       return;
     }
 
     if (studentName.trim().length < 2) {
-      setError('لطفاً نام یا نام مستعار خود را وارد کن.');
+      setError(t('student_join.error_name_empty'));
       return;
     }
 
@@ -53,18 +54,18 @@ export default function StudentJoinCard({ onStartGame }) {
       <div className="join-card-header">
         <div className="join-icon">🎮</div>
         <div>
-          <span className="eyebrow">ورود سریع دانش‌آموز</span>
-          <h2>آماده‌ای وارد مأموریت شوی؟</h2>
+          <span className="eyebrow">{t('student_join.eyebrow')}</span>
+          <h2>{t('student_join.title')}</h2>
         </div>
       </div>
 
       <p className="join-description">
-        کد بازی را از معلمت بگیر و بدون ساخت حساب کاربری وارد مسابقه شو.
+        {t('student_join.desc')}
       </p>
 
       <form onSubmit={handleSubmit} className="join-form">
         <label className="field-label" htmlFor="game-code">
-          کد بازی
+          {t('student_join.code_label')}
         </label>
 
         <div className="input-wrapper code-input-wrapper">
@@ -74,7 +75,7 @@ export default function StudentJoinCard({ onStartGame }) {
             type="text"
             inputMode="numeric"
             maxLength={6}
-            placeholder="مثلاً ۸۴۲۱۰۹"
+            placeholder={t('student_join.code_placeholder')}
             value={gameCode}
             onChange={handleCodeChange}
             dir="ltr"
@@ -84,7 +85,7 @@ export default function StudentJoinCard({ onStartGame }) {
         </div>
 
         <label className="field-label" htmlFor="student-name">
-          نام یا نام مستعار
+          {t('student_join.name_label')}
         </label>
 
         <div className="input-wrapper">
@@ -92,7 +93,7 @@ export default function StudentJoinCard({ onStartGame }) {
           <input
             id="student-name"
             type="text"
-            placeholder="مثلاً آرین"
+            placeholder={t('student_join.name_placeholder')}
             value={studentName}
             onChange={handleNameChange}
             autoComplete="nickname"
@@ -102,14 +103,14 @@ export default function StudentJoinCard({ onStartGame }) {
         {error && <p className="form-error">{error}</p>}
 
         <button type="submit" className="primary-button join-submit">
-          <span>شروع مأموریت</span>
+          <span>{t('student_join.submit_btn')}</span>
           <b>←</b>
         </button>
       </form>
 
       <div className="join-card-footer">
         <span className="online-indicator" />
-        ورود سریع، بدون نیاز به ثبت‌نام
+        {t('student_join.footer_note')}
       </div>
     </div>
   );

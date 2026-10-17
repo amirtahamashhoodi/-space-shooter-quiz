@@ -1,5 +1,6 @@
 // src/component/TeacherAuthModal.jsx
 import React, { useState } from 'react';
+import { t } from '../utils/i18n';
 
 export default function TeacherAuthModal({ onClose, onSuccess }) {
   const [mode, setMode] = useState('login'); // 'login' | 'register'
@@ -27,7 +28,7 @@ export default function TeacherAuthModal({ onClose, onSuccess }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!phoneOrEmail || !password || (mode === 'register' && !fullName)) {
-      alert('لطفاً فیلدها را کامل کنید.');
+      alert(t('auth_modal.validation_alert'));
       return;
     }
     resetForm();
@@ -37,19 +38,19 @@ export default function TeacherAuthModal({ onClose, onSuccess }) {
   return (
     <div className="modal-backdrop" onClick={handleClose}>
       <div className="modal-card" onClick={(e) => e.stopPropagation()}>
-        <button className="modal-close-btn" onClick={handleClose} aria-label="بستن">
+        <button className="modal-close-btn" onClick={handleClose} aria-label={t('auth_modal.close_aria')}>
           ✕
         </button>
 
         <div className="modal-header">
           <span className="modal-badge">
-            {mode === 'login' ? 'خوش آمدید' : 'شروع ۳۰ ثانیه‌ای'}
+            {mode === 'login' ? t('auth_modal.login_badge') : t('auth_modal.register_badge')}
           </span>
           <h3 className="modal-title">
-            {mode === 'login' ? 'ورود به پنل طراح آزمون و معلم' : 'ایجاد حساب معلم'}
+            {mode === 'login' ? t('auth_modal.login_title') : t('auth_modal.register_title')}
           </h3>
           <p className="modal-subtitle">
-            مدیریت کوئیزها، بانک سوالات و اجرای لایو بازی‌ها در کلاس
+            {t('auth_modal.subtitle')}
           </p>
         </div>
 
@@ -59,24 +60,24 @@ export default function TeacherAuthModal({ onClose, onSuccess }) {
             className={`tab-btn ${mode === 'login' ? 'active' : ''}`}
             onClick={() => handleTabSwitch('login')}
           >
-            ورود
+            {t('auth_modal.tab_login')}
           </button>
           <button 
             type="button" 
             className={`tab-btn ${mode === 'register' ? 'active' : ''}`}
             onClick={() => handleTabSwitch('register')}
           >
-            ثبت‌نام جدید
+            {t('auth_modal.tab_register')}
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="auth-form" autoComplete="off">
           {mode === 'register' && (
             <div className="form-group">
-              <label>نام و نام خانوادگی</label>
+              <label>{t('auth_modal.full_name_label')}</label>
               <input
                 type="text"
-                placeholder="مثال: مریم کریمی"
+                placeholder={t('auth_modal.full_name_placeholder')}
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 autoComplete="off"
@@ -86,11 +87,11 @@ export default function TeacherAuthModal({ onClose, onSuccess }) {
           )}
 
           <div className="form-group">
-            <label>شماره موبایل یا ایمیل</label>
+            <label>{t('auth_modal.phone_email_label')}</label>
             <input
               type="text"
               name="teacher_login_identifier"
-              placeholder="0912xxxxxxx یا teacher@school.ir"
+              placeholder={t('auth_modal.phone_email_placeholder')}
               value={phoneOrEmail}
               onChange={(e) => setPhoneOrEmail(e.target.value)}
               autoComplete="off"
@@ -99,11 +100,11 @@ export default function TeacherAuthModal({ onClose, onSuccess }) {
           </div>
 
           <div className="form-group">
-            <label>کلمه عبور</label>
+            <label>{t('auth_modal.password_label')}</label>
             <input
               type="password"
               name="teacher_login_secret"
-              placeholder="••••••••"
+              placeholder={t('auth_modal.password_placeholder')}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               autoComplete="new-password"
@@ -112,13 +113,13 @@ export default function TeacherAuthModal({ onClose, onSuccess }) {
           </div>
 
           <button type="submit" className="auth-submit-btn">
-            {mode === 'login' ? 'ورود به پنل مدیریت' : 'ساخت حساب و شروع'}
+            {mode === 'login' ? t('auth_modal.submit_login') : t('auth_modal.submit_register')}
             <span>←</span>
           </button>
         </form>
 
         <div className="modal-footer-hint">
-          💡 حالت تست سریع: با هر متنی وارد پنل می‌شوید.
+          {t('auth_modal.hint')}
         </div>
       </div>
     </div>

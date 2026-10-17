@@ -1,4 +1,6 @@
+// src/component/TeacherCTA.jsx
 import React from 'react';
+import { t } from '../utils/i18n';
 
 export default function TeacherCTA({ onTeacherClick }) {
   return (
@@ -9,12 +11,9 @@ export default function TeacherCTA({ onTeacherClick }) {
           <div className="cta-decoration cta-decoration-two" />
 
           <div className="cta-content">
-            <span className="eyebrow">ویژه معلمان و مدارس</span>
-            <h2>کلاس بعدی‌تان را متفاوت برگزار کنید.</h2>
-            <p>
-              سؤال بسازید، بازی اجرا کنید و پیشرفت دانش‌آموزان را با وضوح بیشتری
-              ببینید.
-            </p>
+            <span className="eyebrow">{t('teacher_cta.eyebrow')}</span>
+            <h2>{t('teacher_cta.title')}</h2>
+            <p>{t('teacher_cta.subtitle')}</p>
           </div>
 
           <button
@@ -22,7 +21,7 @@ export default function TeacherCTA({ onTeacherClick }) {
             className="secondary-button"
             onClick={onTeacherClick}
           >
-            ورود به پنل معلم
+            {t('teacher_cta.btn')}
             <span>←</span>
           </button>
         </div>

@@ -1,5 +1,6 @@
 // src/pages/TeacherDashboard.jsx
 import React from 'react';
+import { t } from '../utils/i18n';
 
 export default function TeacherDashboard({ onLogout, onBackToHome }) {
   return (
@@ -8,14 +9,14 @@ export default function TeacherDashboard({ onLogout, onBackToHome }) {
         <div className="container header-flex">
           <div className="brand">
             <span className="brand-dot" />
-            <h2>پنل معلم سایبرکویز</h2>
+            <h2>{t('teacher_dashboard.badge')}</h2>
           </div>
           <div className="actions">
             <button onClick={onBackToHome} className="btn-secondary">
-              مشاهده صفحه اصلی
+              {t('teacher_dashboard.view_home')}
             </button>
             <button onClick={onLogout} className="btn-danger">
-              خروج
+              {t('teacher_dashboard.logout')}
             </button>
           </div>
         </div>
@@ -23,30 +24,36 @@ export default function TeacherDashboard({ onLogout, onBackToHome }) {
 
       <main className="container dashboard-main">
         <div className="dashboard-welcome">
-          <h2>سلام همکار گرامی، به اتاق فرمان کلاس خوش آمدید! 🚀</h2>
-          <p>از اینجا می‌توانید بسته سوالات طراحی کنید، خروجی آفلاین بگیرید یا اتاق بازی زنده ایجاد کنید.</p>
+          <h2>{t('teacher_dashboard.welcome')}</h2>
+          <p>{t('teacher_dashboard.subtitle')}</p>
         </div>
 
         <div className="dashboard-cards-grid">
           <div className="dash-card">
             <div className="icon">🎮</div>
-            <h3>ایجاد اتاق بازی زنده (Live Lobby)</h3>
-            <p>ایجاد پین‌کد ۶ رقمی برای ورود سریع دانش‌آموزان در کلاس.</p>
-            <button className="card-action-btn">استارت لابی جدید</button>
+            <h3>{t('teacher_dashboard.lobby_card.title')}</h3>
+            <p>{t('teacher_dashboard.lobby_card.desc')}</p>
+            <button className="card-action-btn">
+              {t('teacher_dashboard.lobby_card.btn')}
+            </button>
           </div>
 
           <div className="dash-card">
             <div className="icon">📝</div>
-            <h3>طراحی بسته سوال جدید</h3>
-            <p>افزودن سوال ۴ گزینه‌ای، هوش مصنوعی یا ایمپورت از اکسل/JSON.</p>
-            <button className="card-action-btn">ساخت کوئیز</button>
+            <h3>{t('teacher_dashboard.quiz_card.title')}</h3>
+            <p>{t('teacher_dashboard.quiz_card.desc')}</p>
+            <button className="card-action-btn">
+              {t('teacher_dashboard.quiz_card.btn')}
+            </button>
           </div>
 
           <div className="dash-card">
             <div className="icon">💾</div>
-            <h3>مدیریت بسته‌های آفلاین (بدون اینترنت)</h3>
-            <p>دانلود فایل پکیج روی فلش مموری برای مدارس با اینترنت ضعیف.</p>
-            <button className="card-action-btn">خروجی آفلاین (JSON/QR)</button>
+            <h3>{t('teacher_dashboard.offline_card.title')}</h3>
+            <p>{t('teacher_dashboard.offline_card.desc')}</p>
+            <button className="card-action-btn">
+              {t('teacher_dashboard.offline_card.btn')}
+            </button>
           </div>
         </div>
       </main>

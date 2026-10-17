@@ -1,8 +1,9 @@
 import React from 'react';
+import { t } from '../utils/i18n';
 
 export default function HeroVisual() {
   return (
-    <div className="hero-visual" aria-label="پیش‌نمایش نبرد فضایی">
+    <div className="hero-visual" aria-label={t('hero_visual.aria_label')}>
       <div className="visual-glow visual-glow-one" />
       <div className="visual-glow visual-glow-two" />
 
@@ -17,12 +18,12 @@ export default function HeroVisual() {
 
       <div className="floating-chip chip-score">
         <span>⭐</span>
-        <strong>+۲۵۰ XP</strong>
+        <strong>{t('hero_visual.xp_gain')}</strong>
       </div>
 
       <div className="floating-chip chip-combo">
         <span>🔥</span>
-        <strong>COMBO ×۳</strong>
+        <strong>{t('hero_visual.combo')}</strong>
       </div>
 
       <div className="space-stars">
@@ -35,7 +36,7 @@ export default function HeroVisual() {
         <div className="ship-energy" />
         <img
           src="/images/player_ship.png"
-          alt="سفینه فضایی سایبرکوییز"
+          alt={t('hero_visual.ship_alt')}
           className="hero-ship"
           onError={(event) => {
             event.currentTarget.style.display = 'none';
@@ -45,21 +46,21 @@ export default function HeroVisual() {
 
       <div className="visual-question-card">
         <div className="question-card-top">
-          <span>سؤال ۳ از ۲۰</span>
-          <span className="live-dot">LIVE</span>
+          <span>{t('hero_visual.demo_step')}</span>
+          <span className="live-dot">{t('hero_visual.demo_live')}</span>
         </div>
 
-        <p>کدام ذره در هسته اتم قرار ندارد؟</p>
+        <p>{t('hero_visual.demo_question')}</p>
 
         <div className="mini-options">
-          <span>پروتون</span>
-          <span className="correct-option">الکترون ✓</span>
+          <span>{t('hero_visual.demo_option_wrong')}</span>
+          <span className="correct-option">{t('hero_visual.demo_option_correct')}</span>
         </div>
       </div>
 
       <div className="visual-label">
         <span className="label-pulse" />
-        مأموریت فعال است
+        {t('hero_visual.mission_active')}
       </div>
     </div>
   );

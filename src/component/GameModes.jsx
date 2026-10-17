@@ -1,97 +1,112 @@
 import React from 'react';
-
-const GAME_ENGINES = [
-  {
-    id: 'space-blaster',
-    title: 'نبرد فضایی',
-    enTitle: 'SPACE BLASTER',
-    theme: 'cyan',
-    status: 'active', // 'active' | 'soon'
-    statusLabel: 'فعال و قابل اجرا',
-    badge: 'نسخه بتا ۱.۰',
-    desc: 'سفینه جنگی خود را کنترل کنید، گزینه‌های غلط را هدف بگیرید و با پاسخ درست موج‌های فضایی را درهم بشکنید.',
-    features: ['مبارزه تک‌نفره و کلاسی', 'سیستم کمبو ضربدر ۲ و ۳', 'جدول برترین‌های زنده'],
-    icon: (
-      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/>
-        <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-3.05 11a22.77 22.77 0 0 1-3.95 2z"/>
-        <path d="M9 12H4s.55-3.03 2-4.5c1.45-1.47 4.5-2 4.5-2"/>
-        <path d="M12 9V4s3.03.55 4.5 2c1.47 1.45 2 4.5 2 4.5"/>
-      </svg>
-    )
-  },
-  {
-    id: 'cyber-vault',
-    title: 'خزانه سایبری',
-    enTitle: 'CYBER VAULT',
-    theme: 'purple',
-    status: 'soon',
-    statusLabel: 'به‌زودی',
-    badge: 'سبک Gold Quest',
-    desc: 'با هر پاسخ صحیح صندوق‌های رمزشده را باز کنید، از رقبا کریپتو بدزدید یا با شیلد و EMP از صندوق خود دفاع کنید.',
-    features: ['سرقت امتیاز رقبا', 'تله‌های فایروال سایبری', 'هیجان غیرقابل پیش‌بینی'],
-    icon: (
-      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect width="18" height="18" x="3" y="3" rx="3"/>
-        <circle cx="12" cy="12" r="4"/>
-        <path d="m15 9-6 6"/>
-        <path d="m9 9 6 6"/>
-        <path d="M12 2v2"/>
-        <path d="M12 20v2"/>
-      </svg>
-    )
-  },
-  {
-    id: 'lab-defense',
-    title: 'دفاع آزمایشگاهی',
-    enTitle: 'LAB DEFENSE',
-    theme: 'green',
-    status: 'soon',
-    statusLabel: 'به‌زودی',
-    badge: 'سبک Tower Defense',
-    desc: 'پاسخ درست، انرژی ساخت برج‌های پلاسما و تله‌های شیمیایی را تأمین می‌کند تا جلوی هجوم ویروس‌ها را بگیرید.',
-    features: ['ارتقای برج و تسلیحات', 'موج‌های غول‌آسا (Boss Wave)', 'تفکر استراتژیک تیمی'],
-    icon: (
-      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M10 2v7.31L4.15 19.3A2 2 0 0 0 5.86 22h12.28a2 2 0 0 0 1.71-2.7L14 9.31V2"/>
-        <path d="M8.5 2h7"/>
-        <path d="M7 16h10"/>
-        <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
-      </svg>
-    )
-  },
-  {
-    id: 'time-bomb',
-    title: 'بمب زمان‌دار',
-    enTitle: 'CO-OP TIME BOMB',
-    theme: 'pink',
-    status: 'soon',
-    statusLabel: 'به‌زودی',
-    badge: 'حالت مشارکتی Co-op',
-    desc: 'کارت‌های چندتکه‌ای که فقط با مشورت تیمی حل می‌شوند؛ هر تأخیر یا اشتباه، ثانیه‌شمار انفجار را سریع‌تر می‌کند!',
-    features: ['بازی گروهی همزمان', 'فشار آدرنالین ثانیه‌ای', 'هم‌افزایی همکلاسی‌ها'],
-    icon: (
-      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="13" r="8"/>
-        <path d="M12 9v4l2.5 2.5"/>
-        <path d="m17.5 4.5 1.5-1.5"/>
-        <path d="M16 2h4v4"/>
-        <path d="M7 3 4 5"/>
-      </svg>
-    )
-  }
-];
+import { t } from '../utils/i18n';
 
 export default function GameModes() {
+  const GAME_ENGINES = [
+    {
+      id: 'space-blaster',
+      title: t('game_modes.space_blaster.title'),
+      enTitle: t('game_modes.space_blaster.enTitle'),
+      theme: 'cyan',
+      status: 'active',
+      statusLabel: t('game_modes.space_blaster.statusLabel'),
+      badge: t('game_modes.space_blaster.badge'),
+      desc: t('game_modes.space_blaster.desc'),
+      features: [
+        t('game_modes.space_blaster.f1'),
+        t('game_modes.space_blaster.f2'),
+        t('game_modes.space_blaster.f3')
+      ],
+      icon: (
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/>
+          <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-3.05 11a22.77 22.77 0 0 1-3.95 2z"/>
+          <path d="M9 12H4s.55-3.03 2-4.5c1.45-1.47 4.5-2 4.5-2"/>
+          <path d="M12 9V4s3.03.55 4.5 2c1.47 1.45 2 4.5 2 4.5"/>
+        </svg>
+      )
+    },
+    {
+      id: 'cyber-vault',
+      title: t('game_modes.cyber_vault.title'),
+      enTitle: t('game_modes.cyber_vault.enTitle'),
+      theme: 'purple',
+      status: 'soon',
+      statusLabel: t('game_modes.cyber_vault.statusLabel'),
+      badge: t('game_modes.cyber_vault.badge'),
+      desc: t('game_modes.cyber_vault.desc'),
+      features: [
+        t('game_modes.cyber_vault.f1'),
+        t('game_modes.cyber_vault.f2'),
+        t('game_modes.cyber_vault.f3')
+      ],
+      icon: (
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <rect width="18" height="18" x="3" y="3" rx="3"/>
+          <circle cx="12" cy="12" r="4"/>
+          <path d="m15 9-6 6"/>
+          <path d="m9 9 6 6"/>
+          <path d="M12 2v2"/>
+          <path d="M12 20v2"/>
+        </svg>
+      )
+    },
+    {
+      id: 'lab-defense',
+      title: t('game_modes.lab_defense.title'),
+      enTitle: t('game_modes.lab_defense.enTitle'),
+      theme: 'green',
+      status: 'soon',
+      statusLabel: t('game_modes.lab_defense.statusLabel'),
+      badge: t('game_modes.lab_defense.badge'),
+      desc: t('game_modes.lab_defense.desc'),
+      features: [
+        t('game_modes.lab_defense.f1'),
+        t('game_modes.lab_defense.f2'),
+        t('game_modes.lab_defense.f3')
+      ],
+      icon: (
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M10 2v7.31L4.15 19.3A2 2 0 0 0 5.86 22h12.28a2 2 0 0 0 1.71-2.7L14 9.31V2"/>
+          <path d="M8.5 2h7"/>
+          <path d="M7 16h10"/>
+          <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
+        </svg>
+      )
+    },
+    {
+      id: 'time-bomb',
+      title: t('game_modes.time_bomb.title'),
+      enTitle: t('game_modes.time_bomb.enTitle'),
+      theme: 'pink',
+      status: 'soon',
+      statusLabel: t('game_modes.time_bomb.statusLabel'),
+      badge: t('game_modes.time_bomb.badge'),
+      desc: t('game_modes.time_bomb.desc'),
+      features: [
+        t('game_modes.time_bomb.f1'),
+        t('game_modes.time_bomb.f2'),
+        t('game_modes.time_bomb.f3')
+      ],
+      icon: (
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="13" r="8"/>
+          <path d="M12 9v4l2.5 2.5"/>
+          <path d="m17.5 4.5 1.5-1.5"/>
+          <path d="M16 2h4v4"/>
+          <path d="M7 3 4 5"/>
+        </svg>
+      )
+    }
+  ];
+
   return (
     <section className="modes-section" id="modes">
       <div className="container">
         <div className="section-header">
-          <span className="eyebrow">یک سؤال، چند تجربه متفاوت</span>
-          <h2>موتورهای بازی CyberQuiz</h2>
-          <p>
-            سؤالات درسی محدود به یک فرم تکراری نیستند؛ هر درس و آزمون می‌تواند در ۴ جهان بازی مجزا با گیم‌پلی کاملاً متفاوت پیاده شود.
-          </p>
+          <span className="eyebrow">{t('game_modes.eyebrow')}</span>
+          <h2>{t('game_modes.title')}</h2>
+          <p>{t('game_modes.subtitle')}</p>
         </div>
 
         <div className="modes-grid">
@@ -102,10 +117,8 @@ export default function GameModes() {
                 key={engine.id}
                 className={`mode-card mode-${engine.theme} ${isActive ? 'is-active' : 'is-upcoming'}`}
               >
-                {/* نور پس‌زمینه رنگی */}
                 <div className="mode-card-glow" />
 
-                {/* ردیف بالای کارت: نشان‌ها */}
                 <div className="mode-card-header">
                   <div className={`status-pill ${isActive ? 'status-pill-active' : 'status-pill-soon'}`}>
                     <span className="status-dot" />
@@ -114,7 +127,6 @@ export default function GameModes() {
                   <span className="engine-badge">{engine.badge}</span>
                 </div>
 
-                {/* آیکون و عناوین */}
                 <div className="mode-icon-box">
                   {engine.icon}
                 </div>
@@ -125,7 +137,6 @@ export default function GameModes() {
                   <p className="mode-description">{engine.desc}</p>
                 </div>
 
-                {/* ویژگی‌های کلیدی این حالت بازی */}
                 <ul className="mode-features">
                   {engine.features.map((feat, idx) => (
                     <li key={idx}>
@@ -135,11 +146,10 @@ export default function GameModes() {
                   ))}
                 </ul>
 
-                {/* دکمه / برچسب پایانی */}
                 <div className="mode-card-footer">
                   {isActive ? (
                     <a href="#hero-join" className="mode-action-btn active-btn">
-                      <span>ورود و تست زنده</span>
+                      <span>{t('game_modes.space_blaster.action')}</span>
                       <span className="arrow-sym">←</span>
                     </a>
                   ) : (
@@ -148,7 +158,7 @@ export default function GameModes() {
                         <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
                         <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                       </svg>
-                      <span>در دست توسعه موتور بازی</span>
+                      <span>{t('game_modes.locked_btn')}</span>
                     </div>
                   )}
                 </div>

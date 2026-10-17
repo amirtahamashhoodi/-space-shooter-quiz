@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Logo from './Logo';
+import { t } from '../utils/i18n';
 
 export default function Header({ onTeacherClick, onJoinClick }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -13,14 +14,13 @@ export default function Header({ onTeacherClick, onJoinClick }) {
 
         <nav className={`main-nav ${menuOpen ? 'is-open' : ''}`}>
           <a href="#features" onClick={closeMenu}>
-            امکانات
+            {t('header.features')}
           </a>
-         <a href="#modes" onClick={closeMenu}>
-  مدل‌های بازی
-</a>
-
+          <a href="#modes" onClick={closeMenu}>
+            {t('header.modes')}
+          </a>
           <a href="#how-it-works" onClick={closeMenu}>
-            راهنمای استفاده
+            {t('header.how_it_works')}
           </a>
           <button
             type="button"
@@ -30,7 +30,7 @@ export default function Header({ onTeacherClick, onJoinClick }) {
               onTeacherClick();
             }}
           >
-            ورود معلم
+            {t('header.mobile_teacher_btn')}
           </button>
         </nav>
 
@@ -40,7 +40,7 @@ export default function Header({ onTeacherClick, onJoinClick }) {
             className="header-join-button"
             onClick={onJoinClick}
           >
-            ورود به بازی
+            {t('header.join_btn')}
           </button>
 
           <button
@@ -48,13 +48,13 @@ export default function Header({ onTeacherClick, onJoinClick }) {
             className="header-teacher-button"
             onClick={onTeacherClick}
           >
-            ورود معلم
+            {t('header.teacher_btn')}
           </button>
 
           <button
             type="button"
             className="menu-toggle"
-            aria-label="باز کردن منو"
+            aria-label={t('header.menu_toggle_aria')}
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen((value) => !value)}
           >

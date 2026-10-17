@@ -1,5 +1,6 @@
 import React from 'react';
 import Logo from './Logo';
+import { t } from '../utils/i18n';
 
 export default function Footer({ onTeacherClick }) {
   return (
@@ -7,21 +8,21 @@ export default function Footer({ onTeacherClick }) {
       <div className="container footer-inner">
         <div className="footer-brand">
           <Logo />
-          <p>یادگیری، این‌بار در قالب یک مأموریت هیجان‌انگیز.</p>
+          <p>{t('footer.tagline')}</p>
         </div>
 
         <div className="footer-links">
-          <a href="#features">امکانات</a>
-         <a href="#modes">مدل‌های بازی</a>
-          <a href="#how-it-works">راهنمای استفاده</a>
+          <a href="#features">{t('footer.features')}</a>
+          <a href="#modes">{t('footer.modes')}</a>
+          <a href="#how-it-works">{t('footer.how_it_works')}</a>
           <button type="button" onClick={onTeacherClick}>
-            ورود معلم
+            {t('footer.teacher_login')}
           </button>
         </div>
 
         <div className="footer-copy">
-          <span>© CyberQuiz</span>
-          <span>ساخته‌شده برای کلاس‌های آینده</span>
+          <span>{t('footer.brand_name')}</span>
+          <span>{t('footer.made_for')}</span>
         </div>
       </div>
     </footer>

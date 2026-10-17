@@ -7,6 +7,7 @@ import HowItWorks from '../component/HowItWorks';
 import GameModes from '../component/GameModes';
 import TeacherCTA from '../component/TeacherCTA';
 import Footer from '../component/Footer';
+import { t } from '../utils/i18n';
 
 export default function LandingPage({ onStartGame, onTeacherClick }) {
   const scrollToJoin = () => {
@@ -29,27 +30,25 @@ export default function LandingPage({ onStartGame, onTeacherClick }) {
             <div className="hero-content">
               <div className="hero-badge">
                 <span className="badge-dot" />
-                پلتفرم بازی‌محور یادگیری و آزمون کلاسی
+                {t('landing.badge')}
               </div>
 
               <h1>
-                کلاس را به
-                <span> میدان نبرد یادگیری </span>
-                تبدیل کن
+                {t('landing.hero_title_p1')}{' '}
+                <span>{t('landing.hero_title_highlight')}</span>{' '}
+                {t('landing.hero_title_p2')}
               </h1>
 
               <p className="hero-description">
-                سایبرکوییز آزمون‌های کلاسی را به تجربه‌ای رقابتی، جذاب و
-                قابل‌اندازه‌گیری تبدیل می‌کند؛ برای یادگیری بهتر و مشارکت بیشتر
-                دانش‌آموزان.
+                {t('landing.hero_desc')}
               </p>
 
               <div className="hero-trust-row">
                 <span>
-                  <b>✓</b> بدون ثبت‌نام دانش‌آموز
+                  <b>✓</b> {t('landing.trust_no_reg')}
                 </span>
                 <span>
-                  <b>✓</b> مناسب کلاس و تمرین
+                  <b>✓</b> {t('landing.trust_fit_class')}
                 </span>
               </div>
 
@@ -61,7 +60,7 @@ export default function LandingPage({ onStartGame, onTeacherClick }) {
 
               <div className="hero-side-caption">
                 <span className="caption-icon">✦</span>
-                هر پاسخ درست، یک قدم نزدیک‌تر به پیروزی
+                {t('landing.side_caption')}
               </div>
             </div>
           </div>
