@@ -13,6 +13,7 @@ import './App.css';
 export default function App() {
   const [screen, setScreen] = useState('home');
   const [player, setPlayer] = useState({ name: '', code: '' });
+  const [activeQuestions, setActiveQuestions] = useState(QUESTIONS);
 
   const [isTeacherModalOpen, setIsTeacherModalOpen] = useState(false);
   const [isTeacherLoggedIn, setIsTeacherLoggedIn] = useState(false);
@@ -36,16 +37,35 @@ export default function App() {
     }
   };
 
+  // تابع آغاز بازی دانش‌آموز با اعتبارسنجی پین و پکیج سوالات
   const startGame = (playerInfo) => {
     const defaultPlayer = {
-      name: t('common.default_player_name') || 'بازیکن دمو',
+      name: t('common.default_player_name') || 'خلبان آزمایشی',
       code: '842109'
     };
-    setPlayer(playerInfo || defaultPlayer);
+    const finalPlayer = playerInfo || defaultPlayer;
+    setPlayer(finalPlayer);
+
+    // جستجوی پکیج سوالات ثبت‌شده با این PIN توسط معلم
+    let questionsToUse = QUESTIONS;
+    try {
+      const savedPackage = localStorage.getItem(`cyberquiz_package_${finalPlayer.code}`) ||
+                           localStorage.getItem('cyberquiz_active_package');
+      if (savedPackage) {
+        const parsed = JSON.parse(savedPackage);
+        if (parsed?.questions && parsed.questions.length > 0) {
+          questionsToUse = parsed.questions;
+        }
+      }
+    } catch (e) {
+      console.warn('استفاده از سوالات پیش‌فرض به دلیل عدم دسترسی به حافظه محلی');
+    }
+
+    setActiveQuestions(questionsToUse);
     setScore(0);
     setLives(3);
     setCombo(0);
-    setCurrentQuestion(QUESTIONS[0]);
+    setCurrentQuestion(questionsToUse[0]);
     setQIndex(0);
     setScreen('playing');
   };
@@ -69,7 +89,7 @@ export default function App() {
 
     let isMounted = true;
 
-    // لود سبک و تنبل (Lazy Load) فیزر بدون کند کردن لندینگ پیج
+    // لود Lazy فیزر
     import('phaser').then((phaserModule) => {
       if (!isMounted || !containerRef.current) return;
       const Phaser = phaserModule.default || phaserModule;
@@ -108,7 +128,9 @@ export default function App() {
 
       const game = new Phaser.Game(config);
       gameRef.current = game;
-      game.registry.set('questions', QUESTIONS);
+      // انتقال سوالات فعال و مشخصات دانش‌آموز به داخل صحنه بازی
+      game.registry.set('questions', activeQuestions);
+      game.registry.set('player', player);
     });
 
     const handleScore = (event) => {
@@ -126,7 +148,23 @@ export default function App() {
 
     const handleGameOver = (event) => {
       const detail = event.detail || {};
-      setScore(detail.score || 0);
+      const finalScore = detail.score || score;
+      setScore(finalScore);
+
+      // ثبت نمره دانش‌آموز در لیست امتیازات PIN برای مشاهده روی پروژکتور
+      try {
+        const key = `cyberquiz_scores_${player.code}`;
+        const prevScores = JSON.parse(localStorage.getItem(key) || '[]');
+        const newRecord = {
+          name: player.name || 'بدون نام',
+          score: finalScore,
+          date: new Date().toLocaleTimeString('fa-IR')
+        };
+        localStorage.setItem(key, JSON.stringify([...prevScores, newRecord]));
+      } catch (err) {
+        console.error('خطا در ذخیره امتیاز', err);
+      }
+
       setScreen('gameover');
     };
 
@@ -145,9 +183,9 @@ export default function App() {
         gameRef.current = null;
       }
     };
-  }, [screen]);
+  }, [screen, activeQuestions]);
 
-  // ۱. صفحه بازی فعال
+  // ۱. صفحه بازی فعال (روی موبایل دانش‌آموز)
   if (screen === 'playing') {
     return (
       <GameScreen
@@ -163,7 +201,7 @@ export default function App() {
     );
   }
 
-  // ۲. صفحه گیم‌اور
+  // ۲. صفحه کارنامه پایان بازی
   if (screen === 'gameover') {
     return (
       <GameOverScreen
@@ -174,7 +212,7 @@ export default function App() {
     );
   }
 
-  // ۳. صفحه پنل معلم
+  // ۳. پنل معلم
   if (screen === 'teacher-dashboard') {
     return (
       <TeacherDashboard
@@ -187,7 +225,7 @@ export default function App() {
     );
   }
 
-  // ۴. صفحه اصلی (Landing) + مودال لاگین معلم
+  // ۴. صفحه فرود و ورود دانش‌آموز با PIN
   return (
     <>
       <LandingPage

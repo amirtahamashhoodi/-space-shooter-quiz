@@ -188,6 +188,28 @@
     "hint": "💡 حالت تست سریع: با هر متنی وارد پنل می‌شوید.",
     "validation_alert": "لطفاً فیلدها را کامل کنید."
   },
+   "quiz_builder": {
+    "header_title": "🚀 طراحی بسته آزمون جدید",
+    "header_subtitle": "مشخصات آزمون را تعیین کرده یا فایل Word / PDF سوالات خود را بارگذاری کنید.",
+    "back_btn": "← بازگشت به داشبورد",
+    "title_label": "عنوان آزمون",
+    "title_placeholder": "مثلاً: علوم هشتم - فصل ۴",
+    "template_label": "قالب بازی مسابقه",
+    "templates": {
+      "space_blaster": "فضاپیما و تسخیر کهکشان (Space Blaster)",
+      "cyber_vault": "گاوصندوق سایبری (Cyber Vault / هک)",
+      "tower_defense": "آزمایشگاه دفاعی (Tower Defense)",
+      "time_bomb": "بمب ساعتی (Time Bomb)"
+    },
+    "upload_title": "بارگذاری فایل سوالات (Word یا PDF)",
+    "upload_desc": "پشتیبانی کامل از پسوندهای .docx و .pdf؛ سوالات به صورت خودکار استخراج می‌شوند.",
+    "upload_btn": "انتخاب فایل Word یا PDF از سیستم",
+    "processing": "⚙️ در حال خواندن آفلاین متن و استخراج سوالات...",
+    "success_msg": "فایل «{filename}» با موفقیت خوانده شد ({count} سوال یافت شد).",
+    "cards_title": "کارت‌های سوال شناسایی‌شده:",
+    "question_prefix": "سوال",
+    "save_offline_btn": "ذخیره نهایی در حافظه آفلاین و دریافت خروجی (JSON / فلش)"
+  },
   "footer": {
     "tagline": "یادگیری، این‌بار در قالب یک مأموریت هیجان‌انگیز.",
     "features": "امکانات",
